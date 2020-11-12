@@ -41,7 +41,7 @@ def collect_data(url, name, con):
         VALUES (?, ?)""", (item, name,))
 
     con.commit()
-
+  
     print(f"{name.title()} collected!")
 
   except Exception as e:
@@ -112,7 +112,7 @@ def main():
       {'url': 'https://klavogonki.ru/vocs/62238/', 'name':  'numbers'},
     ] 
     
-    db_creation(con)
+    # db_creation(con)
 
     download(DICTIONARIES, con)
 

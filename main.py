@@ -16,7 +16,7 @@ from db_connection import DbConnection
 
 # if database is not available you should decomment this piece of code
 
-# main()
+main()
 
 def make_constants(field):
     field.ENGLISH_LAYOUT = {
