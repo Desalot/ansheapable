@@ -112,9 +112,9 @@ def main():
       {'url': 'https://klavogonki.ru/vocs/62238/', 'name':  'numbers'},
     ] 
     
-    # db_creation(con)
+    db_creation(con)
 
-    # download(DICTIONARIES, con)
+    download(DICTIONARIES, con)
 
     # test_connection(con)
 

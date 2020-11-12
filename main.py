@@ -11,20 +11,12 @@ from PyQt5 import QtMultimedia
 from gui import Ui_MainWindow
 from json_parsing import TableWithJson
 from game_judge import PendingGame
-from parsing.main_scratcher import download
+from parsing.main_scratcher import main
 from db_connection import DbConnection
 
 # if database is not available you should decomment this piece of code
 
-# DICTIONARIES = [
-#   {'url': 'https://klavogonki.ru/vocs/12726/', 'file': './parsing/texts/russian_basic.csv', 'name': 'basic russian'},
-#   {'url': 'https://klavogonki.ru/vocs/120759/', 'file': './parsing/texts/hard_russian.csv', 'name': 'hard russian'},
-#   {'url': 'https://klavogonki.ru/vocs/6018/', 'file': './parsing/texts/long_russian.csv', 'name': 'long russian'},
-#   {'url': 'https://klavogonki.ru/vocs/5539/', 'file':'./parsing/texts/basic_english.csv', 'name': 'basic english'},
-#   {'url': 'https://klavogonki.ru/vocs/8835/', 'file': './parsing/texts/long_english.csv', 'name': 'long english'},
-#   {'url': 'https://klavogonki.ru/vocs/62238/', 'file':'./parsing/texts/numbers.csv', 'name':  'numbers'},
-# ]   
-# download(DICTIONARIES)
+# main()
 
 def make_constants(field):
     field.ENGLISH_LAYOUT = {
