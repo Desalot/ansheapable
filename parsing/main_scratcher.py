@@ -113,12 +113,12 @@ def main():
     ] 
     
     # db_creation(con)
+    # clear_base(con)
 
     download(DICTIONARIES, con)
 
     # test_connection(con)
 
-    # clear_base(con)
 
 
 if __name__ == "__main__":
