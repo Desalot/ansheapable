@@ -1,5 +1,6 @@
 import sys
-import os
+import inspect
+import os.path
 import json
 import sqlite3
 from PyQt5.QtWidgets import QApplication, QMainWindow, qApp, QHeaderView, QTableWidgetItem,  QPushButton, QLabel
@@ -17,6 +18,7 @@ from db_connection import DbConnection
 # if database is not available you should decomment this piece of code
 
 # main()
+
 
 def make_constants(field):
     field.ENGLISH_LAYOUT = {
@@ -97,7 +99,7 @@ def make_constants(field):
         '$': [field.a_four, field.a_shift],
         ' ': [field.a_space],
         '?': [field.a_slesh, field.a_shift],
-    } 
+    }
 
     field.RUSSIAN_LAYOUT = {
         'err': [field.r_backspace],
@@ -193,9 +195,9 @@ def make_constants(field):
 
     field.NAMES = {
         'basic english': "Стандартный английский",
-        'hard russian' : "Сложный русский",
-        'long english' : 'Длинный английский',
-        'long russian' : 'Длинный русский',
+        'hard russian': "Сложный русский",
+        'long english': 'Длинный английский',
+        'long russian': 'Длинный русский',
         'numbers': 'Числа',
         'basic russian': 'Стандартный русский'
     }
@@ -205,10 +207,10 @@ def make_constants(field):
 
 
 class MyWidget(QMainWindow, Ui_MainWindow):
-    def __init__(self): 
+    def __init__(self):
         super().__init__()
         self.setupUi(self)
-        ## Изображение
+        # Изображение
         self.pixmap = QPixmap('./uploads/tutorial3.jpg')
         # Если картинки нет, то QPixmap будет пустым,
         # а исключения не будет
@@ -220,13 +222,14 @@ class MyWidget(QMainWindow, Ui_MainWindow):
 
         self.good_education = QLabel(self.info)
         self.good_education.setMaximumSize(QSize(16777215, 50))
-        self.good_education.setStyleSheet("font-size: 25px; font-weight: 900;\n")
+        self.good_education.setStyleSheet(
+            "font-size: 25px; font-weight: 900;\n")
         self.good_education.setAlignment(Qt.AlignCenter)
         self.good_education.setObjectName("good_education")
         self.gridLayout_2.addWidget(self.good_education, 5, 0, 1, 1)
         self.good_education.setText("Удачного обучения!")
         self.setWindowTitle("Ansheapable")
-        self.load_mp3('uploads/super_angry.mp3')   
+        self.load_mp3('uploads/super_angry.mp3')
         # making constants
         make_constants(self)
         self.json = TableWithJson('./parsing/user_info.json')
@@ -254,10 +257,10 @@ class MyWidget(QMainWindow, Ui_MainWindow):
                         self.tr_come_back]
 
         self.rez_area = [self.rez_title,
-                        self.rez_mistakes,
-                        self.rez_main_text,
-                        self.rez_new_game,
-                        self.rez_empty_filler]
+                         self.rez_mistakes,
+                         self.rez_main_text,
+                         self.rez_new_game,
+                         self.rez_empty_filler]
         self.tr_come_back.clicked.connect(self.come_back)
         self.rez_new_game.clicked.connect(self.to_main_window)
         self.hide_elements(self.tr_area)
@@ -267,7 +270,7 @@ class MyWidget(QMainWindow, Ui_MainWindow):
             obj_type = type(item)
             if obj_type == QPushButton:
                 item.clicked.connect(self.open_writin_panel)
-        
+
         self.db_eventor = DbConnection('./parsing/db.sqlite')
         # self.db_eventor.random_text('hard russian')
 
@@ -285,35 +288,33 @@ class MyWidget(QMainWindow, Ui_MainWindow):
         self.hide_elements(self.choose_area)
         self.hide_elements(self.rez_area)
         self.show_elements(self.tr_area)
-        
+
         name = self.sender().objectName()
 
         row_name = ' '.join(name.split('_')[1:])
-        
+
         if 'russian' in name:
             self.tr_english_layout.hide()
             self.cur_language = self.RUSSIAN
         else:
             self.cur_language = self.ENGLISH
             self.tr_russian_layout.hide()
-            
+
         text = self.db_eventor.random_text(row_name)
         self.tr_title.setText(self.NAMES[row_name])
         self.game_trainer = PendingGame(self, text, row_name)
         self.tr_text_field.setText(text)
-        
 
     def to_main_window(self):
         self.hide_elements(self.tr_area)
         self.hide_elements(self.rez_area)
         self.show_elements(self.choose_area)
-        
+
     def come_back(self):
         self.hide_elements(self.tr_area)
         self.hide_elements(self.rez_area)
         self.show_elements(self.choose_area)
         self.game_trainer.ending_without_result()
-
 
     def create_piechart(self):
         ''' creating piechart '''
@@ -325,60 +326,72 @@ class MyWidget(QMainWindow, Ui_MainWindow):
 
         self.field = self.horizontalLayout_12
 
-        self.series = QPieSeries() 
+        self.series = QPieSeries()
         # adding data in series
         for name, value in meta:
             self.series.append(name, value)
         # creating qchart
         self.chart = QChart()
         self.chart.addSeries(self.series)
-        self.chart.setAnimationOptions   (QChart.SeriesAnimations)
+        self.chart.setAnimationOptions(QChart.SeriesAnimations)
         self.chart.setTitle("Статистика по количеству")
         # and adding animations and view
         self.chart_view = QChartView(self.chart)
         self.chart_view.setRenderHint(QPainter.Antialiasing)
         # at all we have a widget which are going to be pushed in your field
-        self.field.addWidget(self.chart_view) 
+        self.field.addWidget(self.chart_view)
 
     def reset_table(self):
         ''' update a info table '''
-        dat = self.json.get_data()  
-        self.basic_russian_max_2.setText(str(dat['basic russian']['max_speed']))
-        self.basic_russian_avg_2.setText(str(dat['basic russian']['avg_value']))
-        self.basic_russian_counter_2.setText(str(dat['basic russian']['counter']))
+        dat = self.json.get_data()
+        self.basic_russian_max_2.setText(
+            str(dat['basic russian']['max_speed']))
+        self.basic_russian_avg_2.setText(
+            str(dat['basic russian']['avg_value']))
+        self.basic_russian_counter_2.setText(
+            str(dat['basic russian']['counter']))
 
-        self.basic_english_max_2.setText(str(dat['basic english']['max_speed']))
-        self.basic_english_avg_2.setText(str(dat['basic english']['avg_value']))
-        self.basic_english_counter_2.setText(str(dat['basic english']['counter']))
+        self.basic_english_max_2.setText(
+            str(dat['basic english']['max_speed']))
+        self.basic_english_avg_2.setText(
+            str(dat['basic english']['avg_value']))
+        self.basic_english_counter_2.setText(
+            str(dat['basic english']['counter']))
 
         self.long_russian_max_2.setText(str(dat['long russian']['max_speed']))
         self.long_russian_avg_2.setText(str(dat['long russian']['avg_value']))
-        self.long_russian_counter_2.setText(str(dat['long russian']['counter']))
-
+        self.long_russian_counter_2.setText(
+            str(dat['long russian']['counter']))
 
         self.long_english_max_2.setText(str(dat['long english']['max_speed']))
         self.long_english_avg_2.setText(str(dat['long english']['avg_value']))
-        self.long_english_counter_2.setText(str(dat['long english']['counter']))
-
+        self.long_english_counter_2.setText(
+            str(dat['long english']['counter']))
 
         self.hard_russian_max_2.setText(str(dat['hard russian']['max_speed']))
         self.hard_russian_avg_2.setText(str(dat['hard russian']['avg_value']))
-        self.hard_russian_counter_2.setText(str(dat['hard russian']['counter']))
+        self.hard_russian_counter_2.setText(
+            str(dat['hard russian']['counter']))
 
         self.numbers_max_2.setText(str(dat['numbers']['max_speed']))
         self.numbers_avg_2.setText(str(dat['numbers']['avg_value']))
         self.numbers_counter_2.setText(str(dat['numbers']['counter']))
 
-    def load_mp3(self,filename):
+    def load_mp3(self, filename):
         ''' loading shep '''
-        cur_dir = '/'.join(os.path.abspath(__file__).split('/')[:-1])
+
+        fn = inspect.getframeinfo(inspect.currentframe()).filename
+        path = os.path.dirname(os.path.abspath(fn))
+
+        cur_dir = path
+
+        # print(sys.argv)
         media = QUrl.fromLocalFile(cur_dir + '/' + filename)
         content = QtMultimedia.QMediaContent(media)
         self.player = QtMultimedia.QMediaPlayer()
         self.player.setMedia(content)
 
-    
-    
+
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     ex = MyWidget()
